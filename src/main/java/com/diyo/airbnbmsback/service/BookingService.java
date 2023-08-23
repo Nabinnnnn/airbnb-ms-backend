@@ -39,7 +39,7 @@ public class BookingService {
 
        Property property = propertyRepository.findById(propertyId).orElseThrow(()->new PropertyNotFoundException("Property not found with ID:" + propertyId));
 
-       if(checkPayment(property.getPrice(),book.getCheckInDate(),book.getCheckInDate(),book.getPayment()))
+       if(checkPayment(property.getPrice(),book.getCheckInDate(),book.getCheckInDate(),book.getPayment().getAmountPaid()))
        {  if(property!=null){
         bookingRepository.save(book);}
     else {
@@ -70,7 +70,7 @@ return propertyBookingList;
 
         Property property = propertyRepository.findById(newBooking.getProperty().getId()).orElseThrow(()->new PropertyNotFoundException("Property not found "));
 
-        if(checkPayment(property.getPrice(),newBooking.getCheckInDate(),newBooking.getCheckInDate(),newBooking.getPayment()))
+        if(checkPayment(property.getPrice(),newBooking.getCheckInDate(),newBooking.getCheckInDate(),newBooking.getPayment().getAmountPaid()))
         {  if(property!=null){
             bookingRepository.save(oldBooking);}
         else {
@@ -99,10 +99,10 @@ return propertyBookingList;
         return bookingRepository.findByUserId(userId);
     }
 
-    public boolean checkPayment(double price, LocalDate checkInDate, LocalDate checkOutDate, Payment payment){
+    public boolean checkPayment(double price, LocalDate checkInDate, LocalDate checkOutDate, double amountPaid){
        long noOfDaysStay =  ChronoUnit.DAYS.between(checkInDate,checkOutDate);
        double amountToBePaid= price*noOfDaysStay;
-       if(amountToBePaid==payment.getAmountPaid()){return true;}
+       if(amountToBePaid==amountPaid){return true;}
        else{
            return false;
        }
