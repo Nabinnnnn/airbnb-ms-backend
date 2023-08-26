@@ -2,7 +2,9 @@ package com.diyo.airbnbmsback.service;
 
 import com.diyo.airbnbmsback.entity.Address;
 
+import com.diyo.airbnbmsback.entity.Booking;
 import com.diyo.airbnbmsback.entity.Property;
+import com.diyo.airbnbmsback.exception.BookingNotFoundException;
 import com.diyo.airbnbmsback.exception.PropertyNotFoundException;
 import com.diyo.airbnbmsback.repository.BookingRepository;
 import com.diyo.airbnbmsback.repository.PropertyRepository;
@@ -17,21 +19,15 @@ public class PropertyService {
 
     @Autowired
     private PropertyRepository propertyRepository;
+    @Autowired
+    private BookingService bookingService;
 
     @Autowired
     private BookingRepository bookingRepository;
 
     public void addProperty(Property property) {
        propertyRepository.save(property);
-       /* Optional<Property> property1 = propertyRepository.findById(property.getId());
-        if (property1.isPresent()) {
-            property.getBooking().forEach(booking -> booking.getProperty().setId(property.getId()));
-            bookingRepository.saveAll(property.getBooking());
-            System.out.println("if");
-        } else {
-            System.out.println("else");
-            propertyRepository.save(property);
-        }*/
+
 
     }
 
@@ -61,7 +57,15 @@ propertyRepository.save(oldProperty);
     }
 
     public void delete(long id) {
-        propertyRepository.deleteById(id);
+       List<Booking> book = bookingService.getBookingOfProperty(id);
+
+       if (book==null){
+
+        propertyRepository.deleteById(id);}
+       else{
+           throw new BookingNotFoundException("Booked property cannot be deleted");
+       }
+
     }
 
     public List<Property> findProperty(double price) {
