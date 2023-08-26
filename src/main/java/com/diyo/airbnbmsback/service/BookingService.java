@@ -35,20 +35,22 @@ public class BookingService {
         return true;
 
     }
-    public void bookTheProperty(Booking book,Long propertyId){
+    public void bookTheProperty(Booking book,Long propertyId) {
+        Property property = propertyRepository.findById(propertyId).orElseThrow(()->new PropertyNotFoundException("Property not found with ID:" + propertyId));
 
-       Property property = propertyRepository.findById(propertyId).orElseThrow(()->new PropertyNotFoundException("Property not found with ID:" + propertyId));
-
-       if(checkPayment(property.getPrice(),book.getCheckInDate(),book.getCheckInDate(),book.getPayment().getAmountPaid()))
-       {  if(property!=null){
-        bookingRepository.save(book);}
-    else {
-           throw new MultipleBookingException("This date is already reserved"); }
-    }
-    else {
-        throw new AmountPaidMismatchException("Please pay full amount" );
+if(multipleBooking(propertyId,book.getCheckInDate(),book.getCheckOutDate())){
+    throw new MultipleBookingException("Already reserved for this date");
        }
-     }
+else {
+    if(checkPayment(property.getPrice(),book.getCheckInDate(),book.getCheckInDate(),book.getPayment().getAmountPaid())){
+bookingRepository.save(book);
+    }
+    else{throw new AmountPaidMismatchException("Please pay exact amount");}
+}
+
+
+
+    }
 
     public List<Booking> getBookingOfProperty(Long propertyId) {
         //Property property = propertyRepository.findById(propertyId).orElseThrow(()->new PropertyNotFoundException("Property not found with ID:" + propertyId));
@@ -62,22 +64,27 @@ return propertyBookingList;
     }
 
     public void changeBooking(Booking newBooking, Long bookingId) {
-        Booking oldBooking = bookingRepository.findById(bookingId).orElseThrow(() -> new PropertyNotFoundException("Please enter correct booking id"));
+        long propertyId = newBooking.getPropertyId();
+        Booking oldBooking = bookingRepository.findById(bookingId).orElseThrow(() -> new BookingNotFoundException("Please enter correct booking id"));
+
+
         oldBooking.setPayment(newBooking.getPayment());
         oldBooking.setCheckInDate(newBooking.getCheckInDate());
         oldBooking.setCheckOutDate(newBooking.getCheckOutDate());
         oldBooking.setGuestCount(newBooking.getGuestCount());
 
-        Property property = propertyRepository.findById(newBooking.getProperty().getId()).orElseThrow(()->new PropertyNotFoundException("Property not found "));
 
-        if(checkPayment(property.getPrice(),newBooking.getCheckInDate(),newBooking.getCheckInDate(),newBooking.getPayment().getAmountPaid()))
-        {  if(property!=null){
-            bookingRepository.save(oldBooking);}
-        else {
-            throw new MultipleBookingException("This date is already reserved"); }
-        }
-        else {
-            throw new AmountPaidMismatchException("Please pay full amount" );
+        if (multipleBooking(propertyId, newBooking.getCheckInDate(), newBooking.getCheckOutDate())) {
+            throw new MultipleBookingException("Already reserved for this date");
+        } else {
+            Property property = propertyRepository.findById(propertyId).orElseThrow(() -> new PropertyNotFoundException("Property not found with ID:" + propertyId));
+
+
+            if (checkPayment(property.getPrice(), newBooking.getCheckInDate(), newBooking.getCheckOutDate(), newBooking.getPayment().getAmountPaid())) {
+                bookingRepository.save(oldBooking);
+            } else {
+                throw new AmountPaidMismatchException("Please pay exact amount");
+            }
         }
     }
 
@@ -102,12 +109,14 @@ return propertyBookingList;
     public boolean checkPayment(double price, LocalDate checkInDate, LocalDate checkOutDate, double amountPaid){
        long noOfDaysStay =  ChronoUnit.DAYS.between(checkInDate,checkOutDate);
        double amountToBePaid= price*noOfDaysStay;
-       if(amountToBePaid==amountPaid){return true;}
+       if(amountToBePaid<=amountPaid){return true;}
        else{
            return false;
        }
 
     }
+
+
 }
 
      /*   if(multipleBooking(newBooking.getPropertyId(),newBooking.getCheckInDate(),newBooking.getCheckOutDate())!=true){

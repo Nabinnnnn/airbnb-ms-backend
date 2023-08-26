@@ -28,13 +28,11 @@ public class Booking {
 
     private int guestCount;
 
-   // private Long propertyId;
+     private Long propertyId;
     @OneToOne(cascade=CascadeType.ALL)
     @JoinColumn(name="paymentId")
 
     private Payment payment;
     private Long userId;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="propertyId")
-    private Property property;
+
 }

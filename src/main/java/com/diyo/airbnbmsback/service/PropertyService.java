@@ -1,7 +1,7 @@
 package com.diyo.airbnbmsback.service;
 
 import com.diyo.airbnbmsback.entity.Address;
-import com.diyo.airbnbmsback.entity.Booking;
+
 import com.diyo.airbnbmsback.entity.Property;
 import com.diyo.airbnbmsback.exception.PropertyNotFoundException;
 import com.diyo.airbnbmsback.repository.BookingRepository;
@@ -22,7 +22,8 @@ public class PropertyService {
     private BookingRepository bookingRepository;
 
     public void addProperty(Property property) {
-        Optional<Property> property1 = propertyRepository.findById(property.getId());
+       propertyRepository.save(property);
+       /* Optional<Property> property1 = propertyRepository.findById(property.getId());
         if (property1.isPresent()) {
             property.getBooking().forEach(booking -> booking.getProperty().setId(property.getId()));
             bookingRepository.saveAll(property.getBooking());
@@ -30,7 +31,7 @@ public class PropertyService {
         } else {
             System.out.println("else");
             propertyRepository.save(property);
-        }
+        }*/
 
     }
 

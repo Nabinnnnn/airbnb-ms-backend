@@ -29,8 +29,6 @@ public class Property {
     private Address address;
     @NotNull(message="Price cannot be null")
     private double price;
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name="bookingId")
-    private List<Booking> booking;
+
 
 }
