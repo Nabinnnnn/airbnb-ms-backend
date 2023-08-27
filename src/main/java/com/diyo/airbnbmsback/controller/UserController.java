@@ -7,12 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("user")
 @CrossOrigin("http://localhost:4200")
 public class UserController {
     @Autowired
     private UserService userService;
-    @PostMapping("/signUp")
+    @PostMapping("/signup")
     public ResponseEntity<String> signUp(@RequestBody User user){
         userService.signUp(user);
 

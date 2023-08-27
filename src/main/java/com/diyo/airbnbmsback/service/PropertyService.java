@@ -59,7 +59,7 @@ propertyRepository.save(oldProperty);
     public void delete(long id) {
        List<Booking> book = bookingService.getBookingOfProperty(id);
 
-       if (book.isEmpty(){
+       if (book.isEmpty()){
 
         propertyRepository.deleteById(id);}
        else{
