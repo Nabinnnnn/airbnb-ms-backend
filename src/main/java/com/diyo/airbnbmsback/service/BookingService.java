@@ -42,7 +42,7 @@ if(multipleBooking(propertyId,book.getCheckInDate(),book.getCheckOutDate())){
     throw new MultipleBookingException("Already reserved for this date");
        }
 else {
-    if(checkPayment(property.getPrice(),book.getCheckInDate(),book.getCheckInDate(),book.getPayment().getAmountPaid())){
+    if(checkPayment(property.getPrice(),book.getCheckInDate(),book.getCheckOutDate(),book.getPayment().getAmountPaid())){
 bookingRepository.save(book);
     }
     else{throw new AmountPaidMismatchException("Please pay exact amount");}
